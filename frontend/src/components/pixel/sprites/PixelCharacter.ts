@@ -1,17 +1,20 @@
 import { Container, Graphics } from "pixi.js";
 import type { PixelAnimation } from "@/lib/eventTypes";
 import type { PixelPoint } from "../RoomMap";
+import { drawPixelRect, drawSpriteFrame } from "../PixelRenderer";
+import { palette } from "../pixelConstants";
+import { CHARACTER_SPRITES } from "./CharacterSprites";
 import type { CharacterVariant } from "./CharacterVariants";
-
-const PIXEL = 4;
 
 export class PixelCharacter {
   readonly container = new Container();
-  private sprite = new Graphics();
-  private shadow = new Graphics();
+  private readonly shadow = new Graphics();
+  private readonly sprite = new Graphics();
   private target: PixelPoint;
   private action: PixelAnimation = "idle";
+  private facing: "left" | "right" = "right";
   private time = 0;
+  private frameIndex = 0;
 
   constructor(
     readonly variant: CharacterVariant,
@@ -24,15 +27,22 @@ export class PixelCharacter {
     this.draw();
   }
 
+  get bubbleAnchor(): PixelPoint {
+    return { x: this.container.x, y: this.container.y - 44 };
+  }
+
   moveTo(point: PixelPoint) {
+    if (point.x < this.container.x) this.facing = "left";
+    if (point.x > this.container.x) this.facing = "right";
     this.target = point;
-    if (this.action === "idle" || this.action === "sleep") {
+    if (this.action === "idle" || this.action === "sleep" || this.action === "docked") {
       this.action = "walk";
     }
   }
 
   setAction(action: PixelAnimation) {
     this.action = action;
+    this.frameIndex = 0;
   }
 
   setVisible(visible: boolean) {
@@ -40,70 +50,49 @@ export class PixelCharacter {
   }
 
   tick(delta: number, reducedMotion: boolean) {
-    this.time += delta / 10;
+    this.time += delta;
     const dx = this.target.x - this.container.x;
     const dy = this.target.y - this.container.y;
     const distance = Math.hypot(dx, dy);
-    if (!reducedMotion && distance > 1) {
-      const speed = Math.min(distance, 1.7 * delta);
+    if (!reducedMotion && distance > 0.8) {
+      const speed = Math.min(distance, (this.variant.id === "mini-rick-drone" ? 1.9 : 1.15) * delta);
       this.container.x += (dx / distance) * speed;
       this.container.y += (dy / distance) * speed;
-      if (this.action !== "panic" && this.action !== "fail") this.action = "walk";
+      if (!["panic", "fail", "work"].includes(this.action)) this.action = "walk";
     } else {
       this.container.x = this.target.x;
       this.container.y = this.target.y;
-      if (this.action === "walk") this.action = "idle";
+      if (this.action === "walk") this.action = this.variant.id === "mini-rick-drone" ? "docked" : "idle";
     }
+
+    const frames = CHARACTER_SPRITES[this.variant.spriteKey][this.action] ?? CHARACTER_SPRITES[this.variant.spriteKey].idle;
+    this.frameIndex = Math.floor(this.time / 10) % frames.length;
     this.draw();
   }
 
-  private rect(x: number, y: number, w: number, h: number, color: number, alpha = 1) {
-    this.sprite.rect(x * PIXEL, y * PIXEL, w * PIXEL, h * PIXEL);
-    this.sprite.fill({ color, alpha });
-  }
-
   private draw() {
-    const palette = this.variant.palette;
-    const bob = this.action === "walk" ? Math.round(Math.sin(this.time) * 1) : 0;
-    const panic = this.action === "panic" ? Math.round(Math.sin(this.time * 3) * 1) : 0;
-    const workArm = this.action === "work" ? Math.round(Math.sin(this.time * 2) * 1) : 0;
-    const successArm = this.action === "success" ? -2 : 0;
-    const failSkew = this.action === "fail" ? Math.round(Math.sin(this.time * 7) * 2) : 0;
+    const frameSet = CHARACTER_SPRITES[this.variant.spriteKey];
+    const frames = frameSet[this.action] ?? frameSet.idle;
+    const frame = frames[this.frameIndex % frames.length];
+    const scale = this.variant.scale;
+    const width = Math.max(...frame.map((line) => line.length)) * scale;
+    const height = frame.length * scale;
+    const bob = this.action === "walk" ? Math.round(Math.sin(this.time / 5) * 1) : 0;
+    const hover = this.variant.id === "mini-rick-drone" ? Math.round(Math.sin(this.time / 8) * 2) : 0;
+
+    this.shadow.clear();
+    this.shadow.ellipse(0, 5, width * 0.42, 4);
+    this.shadow.fill({ color: palette.shadow, alpha: 0.35 });
 
     this.sprite.clear();
-    this.shadow.clear();
-    this.shadow.ellipse(0, 42, 28, 7);
-    this.shadow.fill({ color: 0x000000, alpha: 0.28 });
+    drawSpriteFrame(this.sprite, frame, this.variant.palette, -width / 2, -height + bob + hover, scale, this.facing === "left");
 
-    this.rect(-4 + failSkew, -18 + bob, 8, 2, palette.hair);
-    this.rect(-5 - panic, -16 + bob, 10, 2, palette.hair);
-    this.rect(-3, -14 + bob, 7, 2, palette.hair);
-    this.rect(-4, -12 + bob, 8, 6, palette.skin);
-    this.rect(-3, -11 + bob, 6, 1, palette.visor);
-    this.rect(-5, -6 + bob, 10, 11, palette.coat);
-    this.rect(-3, 5 + bob, 3, 8, palette.pants);
-    this.rect(1, 5 + bob, 3, 8, palette.pants);
-    this.rect(-7, -4 + bob, 2, 8 + workArm + successArm, palette.coat);
-    this.rect(5, -4 + bob, 2, 8 - workArm + successArm, palette.coat);
-    this.rect(-6, 13 + bob, 4, 2, 0x111111);
-    this.rect(1, 13 + bob, 4, 2, 0x111111);
-
-    if (this.action === "think") {
-      this.rect(7, -22, 2, 2, palette.accent, 0.8);
-      this.rect(10, -26, 1, 1, palette.accent, 0.8);
+    if (this.action === "work") {
+      drawPixelRect(this.sprite, width * 0.24, -height * 0.48 + bob, 3, 3, this.variant.palette.A ?? palette.toxicGreen);
     }
-    if (this.action === "panic" || this.action === "fail") {
-      this.rect(-9, -24, 3, 2, 0xff4d6d);
-      this.rect(7, -25, 2, 3, 0xff4d6d);
-    }
-    if (this.action === "success") {
-      this.rect(8, -24, 2, 5, palette.accent);
-      this.rect(6, -22, 6, 2, palette.accent);
-    }
-    if (this.variant.id === "mini-rick-drone") {
-      this.rect(-9, -2, 3, 1, palette.accent);
-      this.rect(6, -2, 3, 1, palette.accent);
-      this.rect(-1, -22, 2, 3, palette.accent);
+    if (this.action === "fail" || this.action === "panic") {
+      drawPixelRect(this.sprite, -width * 0.54, -height + 4, 4, 4, palette.errorRed);
+      drawPixelRect(this.sprite, width * 0.44, -height + 10, 3, 5, palette.errorRed);
     }
   }
 }

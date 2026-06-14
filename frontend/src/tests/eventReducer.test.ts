@@ -69,8 +69,8 @@ describe("pixel basement event reducer", () => {
         status: "running"
       })
     );
-    expect(next.activeStation).toBe("patch-desk");
-    expect(next.toolActivity.apply_patch?.characterId).toBe("coder-rick");
+    expect(next.activeStation).toBe("patch-bench");
+    expect(next.toolActivity.apply_patch?.characterId).toBe("patch-rick");
   });
 
   it("routes tool failures to Glitch Rick and error state", () => {
@@ -83,7 +83,7 @@ describe("pixel basement event reducer", () => {
         status: "failure"
       })
     );
-    expect(next.activeStation).toBe("error-corner");
+    expect(next.activeStation).toBe("error-zone");
     expect(next.activeCharacters["glitch-rick"]?.animation).toBe("fail");
     expect(next.roomMood).toBe("glitch");
   });

@@ -35,7 +35,8 @@ export function PixellatedBasement({
         resizeTo: target,
         backgroundAlpha: 0,
         antialias: false,
-        autoDensity: true
+        autoDensity: true,
+        roundPixels: true
       });
       if (disposed) {
         app.destroy();

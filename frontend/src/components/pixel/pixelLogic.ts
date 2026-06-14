@@ -37,11 +37,11 @@ export function getStationForEvent(event: NormalizedEvent): PixelStationId {
     return "memory-compressor";
   }
   if (event.event_type === "SubagentStart" || event.event_type === "SubagentStop") return "drone-bay";
-  if (event.event_type === "PostToolUse" && event.status === "failure") return "error-corner";
+  if (event.event_type === "PostToolUse" && event.status === "failure") return "error-zone";
   if (event.event_type === "PreToolUse" || event.event_type === "PostToolUse") {
     return getStationForTool(event.tool_name);
   }
-  return "main-terminal";
+  return "main-computer";
 }
 
 export function getAnimationForEvent(event: NormalizedEvent): PixelAnimation {

@@ -50,6 +50,16 @@ Rick's Basement is now a little animated basement, not a dashboard. Codex events
 
 The UI is intentionally game-like: pixel borders, hard shadows, limited colors, compact HUD overlays, and a PixiJS room scene as the main product.
 
+## Visual QA
+
+Before publishing screenshots or a demo GIF:
+
+- Open [http://127.0.0.1:3000](http://127.0.0.1:3000) with the backend offline and confirm the pixel basement still looks alive.
+- Confirm the room shows a back wall, floor, pipes, shelves, cables, machines, stations, and multiple original pixel scientist variants.
+- Start the backend and run the simulator to confirm characters move between stations.
+- Confirm permission events flash the containment door, compaction activates the memory machine, subagent events launch the mini drone, and failed tool events trigger glitch/error effects.
+- The screenshot should read as a tiny animated indie-game lab, not a dashboard or placeholder canvas.
+
 ## Why No Copyrighted Sprites?
 
 Rick's Basement is open source, so it uses original pixel scientist characters drawn procedurally in code. It does not ship copyrighted show sprites, screenshots, fan art, logos, dialogue, exact character likenesses, or character names from any TV series.

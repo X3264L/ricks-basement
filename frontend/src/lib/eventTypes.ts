@@ -37,7 +37,7 @@ export type ConnectionStatus = "offline" | "connecting" | "online";
 
 export type PixelCharacterId =
   | "basement-rick"
-  | "coder-rick"
+  | "patch-rick"
   | "terminal-rick"
   | "tester-rick"
   | "archivist-rick"
@@ -47,15 +47,17 @@ export type PixelCharacterId =
 
 export type PixelStationId =
   | "idle-couch"
-  | "main-terminal"
+  | "main-computer"
   | "shell-terminal"
-  | "patch-desk"
+  | "patch-bench"
   | "test-rig"
   | "memory-compressor"
   | "containment-door"
   | "drone-bay"
   | "whiteboard"
-  | "error-corner";
+  | "error-zone"
+  | "strange-machine"
+  | "shelf-area";
 
 export type PixelAnimation =
   | "idle"
@@ -65,7 +67,8 @@ export type PixelAnimation =
   | "success"
   | "fail"
   | "think"
-  | "sleep";
+  | "sleep"
+  | "docked";
 
 export type RoomMood = "sleepy" | "busy" | "celebrating" | "warning" | "memory" | "glitch";
 

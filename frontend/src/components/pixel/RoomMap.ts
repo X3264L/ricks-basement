@@ -1,4 +1,5 @@
 import type { PixelStationId } from "@/lib/eventTypes";
+import { WORLD_HEIGHT, WORLD_WIDTH } from "./pixelConstants";
 
 export type PixelPoint = {
   x: number;
@@ -8,22 +9,25 @@ export type PixelPoint = {
 export type RoomStation = PixelPoint & {
   id: PixelStationId;
   label: string;
+  facing?: "left" | "right";
 };
 
-export const ROOM_WIDTH = 960;
-export const ROOM_HEIGHT = 540;
+export const ROOM_WIDTH = WORLD_WIDTH;
+export const ROOM_HEIGHT = WORLD_HEIGHT;
 
 export const ROOM_STATIONS: Record<PixelStationId, RoomStation> = {
-  "idle-couch": { id: "idle-couch", label: "Idle couch", x: 170, y: 390 },
-  "main-terminal": { id: "main-terminal", label: "Main computer", x: 480, y: 265 },
-  "shell-terminal": { id: "shell-terminal", label: "Shell terminal", x: 760, y: 310 },
-  "patch-desk": { id: "patch-desk", label: "Patch desk", x: 690, y: 405 },
-  "test-rig": { id: "test-rig", label: "Test rig", x: 820, y: 405 },
-  "memory-compressor": { id: "memory-compressor", label: "Memory compressor", x: 210, y: 260 },
-  "containment-door": { id: "containment-door", label: "Containment door", x: 84, y: 330 },
-  "drone-bay": { id: "drone-bay", label: "Drone bay", x: 875, y: 180 },
-  whiteboard: { id: "whiteboard", label: "Mission board", x: 255, y: 165 },
-  "error-corner": { id: "error-corner", label: "Error corner", x: 84, y: 430 }
+  "idle-couch": { id: "idle-couch", label: "Idle couch", x: 70, y: 215, facing: "right" },
+  "main-computer": { id: "main-computer", label: "Main computer", x: 236, y: 150, facing: "right" },
+  "shell-terminal": { id: "shell-terminal", label: "Shell terminal", x: 375, y: 172, facing: "left" },
+  "patch-bench": { id: "patch-bench", label: "Patch bench", x: 312, y: 218, facing: "left" },
+  "test-rig": { id: "test-rig", label: "Test rig", x: 414, y: 220, facing: "left" },
+  "memory-compressor": { id: "memory-compressor", label: "Memory compressor", x: 108, y: 158, facing: "right" },
+  "containment-door": { id: "containment-door", label: "Containment door", x: 38, y: 188, facing: "right" },
+  "drone-bay": { id: "drone-bay", label: "Drone bay", x: 426, y: 96, facing: "left" },
+  whiteboard: { id: "whiteboard", label: "Mission board", x: 136, y: 104, facing: "right" },
+  "error-zone": { id: "error-zone", label: "Error zone", x: 52, y: 232, facing: "right" },
+  "strange-machine": { id: "strange-machine", label: "Strange machine", x: 236, y: 214, facing: "right" },
+  "shelf-area": { id: "shelf-area", label: "Shelf area", x: 64, y: 116, facing: "right" }
 };
 
 export function getStationPoint(stationId: PixelStationId): PixelPoint {
@@ -41,15 +45,16 @@ export function getStationForTool(toolName?: string | null): PixelStationId {
     normalized.includes("apply") ||
     normalized.includes("file")
   ) {
-    return "patch-desk";
+    return "patch-bench";
   }
   if (
     normalized.includes("test") ||
     normalized.includes("pytest") ||
     normalized.includes("vitest") ||
-    normalized.includes("lint")
+    normalized.includes("lint") ||
+    normalized.includes("typecheck")
   ) {
     return "test-rig";
   }
-  return "main-terminal";
+  return "main-computer";
 }
