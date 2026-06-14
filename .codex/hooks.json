@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "python .codex/hooks/emit_event.py SessionStart",
+        "windows_command": "py -3 .codex/hooks/emit_event.py SessionStart"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "command": "python .codex/hooks/emit_event.py UserPromptSubmit",
+        "windows_command": "py -3 .codex/hooks/emit_event.py UserPromptSubmit"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "command": "python .codex/hooks/emit_event.py PreToolUse",
+        "windows_command": "py -3 .codex/hooks/emit_event.py PreToolUse"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "command": "python .codex/hooks/emit_event.py PostToolUse",
+        "windows_command": "py -3 .codex/hooks/emit_event.py PostToolUse"
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "command": "python .codex/hooks/emit_event.py PermissionRequest",
+        "windows_command": "py -3 .codex/hooks/emit_event.py PermissionRequest"
+      }
+    ],
+    "PreCompact": [
+      {
+        "command": "python .codex/hooks/emit_event.py PreCompact",
+        "windows_command": "py -3 .codex/hooks/emit_event.py PreCompact"
+      }
+    ],
+    "PostCompact": [
+      {
+        "command": "python .codex/hooks/emit_event.py PostCompact",
+        "windows_command": "py -3 .codex/hooks/emit_event.py PostCompact"
+      }
+    ],
+    "SubagentStart": [
+      {
+        "command": "python .codex/hooks/emit_event.py SubagentStart",
+        "windows_command": "py -3 .codex/hooks/emit_event.py SubagentStart"
+      }
+    ],
+    "SubagentStop": [
+      {
+        "command": "python .codex/hooks/emit_event.py SubagentStop",
+        "windows_command": "py -3 .codex/hooks/emit_event.py SubagentStop"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "python .codex/hooks/emit_event.py Stop",
+        "windows_command": "py -3 .codex/hooks/emit_event.py Stop"
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      RICKS_BASEMENT_DB_PATH: /data/ricks-basement.sqlite3
+      RICKS_BASEMENT_PRIVACY_MODE: minimal
+    volumes:
+      - ricks-basement-data:/data
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app/frontend
+    command: sh -c "corepack enable && pnpm install && pnpm dev --hostname 0.0.0.0"
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_RICKS_BASEMENT_API: http://127.0.0.1:8787
+      NEXT_PUBLIC_RICKS_BASEMENT_WS: ws://127.0.0.1:8787/ws
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+
+volumes:
+  ricks-basement-data:
