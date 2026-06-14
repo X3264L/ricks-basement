@@ -1,4 +1,10 @@
 import { create } from "zustand";
+import {
+  getAnimationForEvent,
+  getCharacterForEvent,
+  getRoomMoodForVisualState,
+  getStationForEvent
+} from "@/components/pixel/pixelLogic";
 import type { BasementState, NormalizedEvent } from "@/lib/eventTypes";
 
 export const initialBasementState: BasementState = {
@@ -11,7 +17,14 @@ export const initialBasementState: BasementState = {
   containmentRequests: [],
   memoryPressure: 0,
   selectedEvent: null,
-  replayMode: false
+  replayMode: false,
+  activeCharacters: {},
+  activeStation: null,
+  latestEvent: null,
+  containmentActive: false,
+  memoryCompressionActive: false,
+  toolActivity: {},
+  roomMood: "sleepy"
 };
 
 export function reduceBasementEvent(
@@ -22,27 +35,49 @@ export function reduceBasementEvent(
   const recentEvents = [...state.recentEvents, event].slice(-100);
   const activeTools = { ...state.activeTools };
   const activeDrones = { ...state.activeDrones };
+  const activeCharacters = { ...state.activeCharacters };
+  const toolActivity = { ...state.toolActivity };
+  const characterId = getCharacterForEvent(event);
+  const stationId = getStationForEvent(event);
+  const animation = getAnimationForEvent(event);
   let containmentRequests = state.containmentRequests;
+  let containmentActive = state.containmentActive;
   let memoryPressure = state.memoryPressure;
+  let memoryCompressionActive = state.memoryCompressionActive;
 
   if (event.event_type === "PreToolUse") {
     activeTools[toolKey] = event;
+    toolActivity[toolKey] = {
+      toolName: event.tool_name ?? "unknown-tool",
+      characterId,
+      stationId,
+      status: event.status
+    };
   }
 
   if (event.event_type === "PostToolUse") {
     delete activeTools[toolKey];
+    toolActivity[toolKey] = {
+      toolName: event.tool_name ?? "unknown-tool",
+      characterId,
+      stationId,
+      status: event.status
+    };
   }
 
   if (event.event_type === "PermissionRequest") {
     containmentRequests = [event, ...state.containmentRequests].slice(0, 3);
+    containmentActive = true;
   }
 
   if (event.event_type === "PreCompact") {
     memoryPressure = 1;
+    memoryCompressionActive = true;
   }
 
   if (event.event_type === "PostCompact") {
     memoryPressure = 0.22;
+    memoryCompressionActive = false;
   }
 
   if (event.event_type === "SubagentStart") {
@@ -53,15 +88,34 @@ export function reduceBasementEvent(
     delete activeDrones[toolKey];
   }
 
+  if (event.event_type === "Stop") {
+    containmentActive = false;
+    memoryCompressionActive = false;
+  }
+
+  activeCharacters[characterId] = {
+    characterId,
+    stationId,
+    animation,
+    eventType: event.event_type
+  };
+
   return {
     ...state,
     currentSession: event.session_id,
     recentEvents,
     activeTools,
     activeDrones,
+    activeCharacters,
     currentVisualState: event.visual_state,
     containmentRequests,
-    memoryPressure
+    memoryPressure,
+    activeStation: stationId,
+    latestEvent: event,
+    containmentActive,
+    memoryCompressionActive,
+    toolActivity,
+    roomMood: getRoomMoodForVisualState(event.visual_state)
   };
 }
 

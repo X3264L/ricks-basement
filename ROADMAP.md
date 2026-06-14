@@ -4,8 +4,8 @@
 
 - Hook ingestion
 - WebSocket events
-- Animated reactor
-- Experiment log
+- Animated 8-bit basement room
+- Pixel event ticker
 - Simulated event flow
 
 ## Phase 2: Session Replay
@@ -17,10 +17,10 @@
 
 ## Phase 3: Better Visual System
 
-- Improved reactor animations
-- Better drone bay
-- Cinematic containment lock
-- Terminal flicker
+- Better procedural pixel sprites
+- More expressive drone bay
+- Cinematic pixel containment door
+- Pixel terminal flicker
 - Screenshot/demo mode
 
 ## Phase 4: Plugin Packaging
@@ -40,9 +40,9 @@
 
 ## Phase 6: Theme System
 
-- Rick's Basement default
+- Rick's Basement pixel lab
 - Lacuna Terminal
-- Vanta Reactor
+- Vanta Basement
 - Minimal CLI
 - CRT Lab
 

@@ -2,7 +2,7 @@
 
 **A secret command center for Codex.**
 
-Rick's Basement is a local-first visual command center for Codex. It turns invisible agent activity into a live sci-fi basement interface: tool calls activate machines, subagents deploy as drones, permission requests trigger containment locks, memory compaction compresses the memory core, and completed turns become sealed experiment reports.
+Rick's Basement is a local-first 8-bit animated Codex visualizer. It turns invisible agent activity into a tiny pixel-art basement lab where original mad-scientist variants walk around, work at machines, launch mini drones, panic at containment doors, and compress memory in a noisy little machine.
 
 It does not spend tokens to do this. Rick's Basement listens to Codex lifecycle hooks, captures minimal local telemetry, and renders everything in real time.
 
@@ -14,7 +14,7 @@ It does not spend tokens to do this. Rick's Basement listens to Codex lifecycle 
 
 - A private local telemetry viewer for Codex lifecycle events.
 - A FastAPI and SQLite backend with WebSocket streaming.
-- A Next.js, React, Tailwind, PixiJS, and Zustand control room.
+- A Next.js, React, Tailwind, PixiJS, and Zustand pixel room.
 - A set of small Python Codex hook scripts that fail silently when offline.
 
 ## What It Is Not
@@ -22,6 +22,7 @@ It does not spend tokens to do this. Rick's Basement listens to Codex lifecycle 
 - Not an office simulator.
 - Not a clone or reskin of another tool.
 - Not a corporate SaaS dashboard.
+- Not a serious glassy sci-fi cockpit.
 - Not an LLM summarizer.
 - Not a cloud service.
 
@@ -33,9 +34,25 @@ flowchart LR
   Hooks --> API["FastAPI backend :8787"]
   API --> SQLite[("SQLite")]
   API --> WS["WebSocket /ws"]
-  WS --> UI["Next.js control room :3000"]
-  UI --> Pixi["PixiJS reactor scene"]
+  WS --> UI["Next.js pixel basement :3000"]
+  UI --> Pixi["PixiJS 8-bit room scene"]
 ```
+
+## Visual Direction
+
+Rick's Basement is now a little animated basement, not a dashboard. Codex events drive original pixel scientist characters:
+
+- Tool calls send the right character to a terminal, patch desk, or test rig.
+- Permission requests send the paranoid lookout to the containment door.
+- Memory compaction sends the archivist to the memory compressor.
+- Subagents launch as mini drones from the drone bay.
+- Failures briefly summon the glitch character and flash the room red.
+
+The UI is intentionally game-like: pixel borders, hard shadows, limited colors, compact HUD overlays, and a PixiJS room scene as the main product.
+
+## Why No Copyrighted Sprites?
+
+Rick's Basement is open source, so it uses original pixel scientist characters drawn procedurally in code. It does not ship copyrighted show sprites, screenshots, fan art, logos, dialogue, exact character likenesses, or character names from any TV series.
 
 ## Why It Does Not Waste Tokens
 
@@ -74,7 +91,16 @@ Manual setup:
 cd backend
 uv sync
 cd ../frontend
-pnpm install
+corepack pnpm install
+```
+
+Windows PowerShell setup without `make`:
+
+```powershell
+cd backend
+uv sync
+cd ..\frontend
+corepack pnpm install
 ```
 
 ## Run
@@ -93,12 +119,33 @@ make backend
 make frontend
 ```
 
+Windows PowerShell without `make`:
+
+```powershell
+cd backend
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8787 --reload
+```
+
+In another shell:
+
+```powershell
+cd frontend
+corepack pnpm dev
+```
+
 ## Run Without Codex
 
 Use simulated lifecycle events:
 
 ```bash
 make simulate
+```
+
+Windows PowerShell without `make`:
+
+```powershell
+python .codex/hooks/simulate_events.py
+py -3 .codex/hooks/simulate_events.py
 ```
 
 The simulator sends a full session: session start, prompt submit, tool use, permission request, memory compaction, subagent start/stop, and stop.
